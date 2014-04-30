@@ -38,10 +38,6 @@ http://arduino.cc/en/Tutorial/Tone
 
 // notes in the melody:
 int melody[] = {
-  So,Mi,Mi,Fa,Re,Re,Do,Re,Mi,Fa,So,So
-};
-/*
-int melody[] = {
 NOTE_E4, NOTE_E4, NOTE_E4, NOTE_C4, NOTE_E4, NOTE_G4, NOTE_G3,   
 NOTE_C4, NOTE_G3, NOTE_E3, NOTE_A3, NOTE_B3, NOTE_AS3, NOTE_A3, NOTE_G3, NOTE_E4, NOTE_G4, NOTE_A4, NOTE_F4, NOTE_G4, NOTE_E4, NOTE_C4, NOTE_D4, NOTE_B3,  
 NOTE_C4, NOTE_G3, NOTE_E3, NOTE_A3, NOTE_B3, NOTE_AS3, NOTE_A3, NOTE_G3, NOTE_E4, NOTE_G4, NOTE_A4, NOTE_F4, NOTE_G4, NOTE_E4, NOTE_C4, NOTE_D4, NOTE_B3,  
@@ -50,11 +46,6 @@ NOTE_G4, NOTE_FS4, NOTE_E4, NOTE_DS4, NOTE_E4, NOTE_GS3, NOTE_A3, NOTE_C4, NOTE_
 NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_C4, NOTE_A3, NOTE_G3, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4,  
 NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_C4, NOTE_A3, NOTE_G3
 };
-*/
-int noteDurations[] = {
-  8,8,4,8,8,4,8,8,8,8,8,8,4
-};
-/*
 // note durations: 4 = quarter note, 8 = eighth note, etc.:
 int noteDurations[] = {
 8,4,4,8,4,2,2, 
@@ -72,13 +63,10 @@ int noteDurations[] = {
 4,4,8,4,1,8,4,
 4,8,4,8,4,8,2
 };
-*/
 
 void setup(void) 
 {
     Serial.begin(9600); 
-    
-
 }
 
 void loop(void) 
@@ -100,8 +88,6 @@ void loop(void)
         delay(pauseBetweenNotes);
         // stop the tone playing:
         //noTone(8);
-
     }
-    
 }
 
