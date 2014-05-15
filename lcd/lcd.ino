@@ -43,6 +43,8 @@ int ballSpeed = 10; // lower numbers are faster
 int ballX, ballY, oldBallX, oldBallY;
 
 void setup() {
+  // Serial screen
+  Serial.begin(9600);
   // initialize the display
   TFTscreen.begin();
   // black background
@@ -56,9 +58,9 @@ void loop() {
   int myHeight = TFTscreen.height();
  
   // map the paddle's location to the position of the potentiometers  
-  paddleX = map(analogRead(A0), 512, -512, 0, myWidth) - 20/2;
-  paddleY = map(analogRead(A1), 512, -512, 0, myHeight) - 5/2;
- 
+  paddleX = map(analogRead(A0), 0, 1024, 0, myWidth) - 20/2;
+  paddleY = map(analogRead(A1), 0, 512, 0, myHeight) - 5/2;
+  Serial.println(analogRead(A1));
   // set the fill color to black and erase the previous
   // position of the paddle if different from present
   TFTscreen.fill(0,0,0);
@@ -77,7 +79,7 @@ void loop() {
 
   // update the ball's position and draw it on screen
   if (millis() % ballSpeed < 2) {
-  moveBall();
+    moveBall();
   }
   
 }
