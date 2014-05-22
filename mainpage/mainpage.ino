@@ -139,13 +139,13 @@ void DrawingMenu(int selected){
         // as the previous.
         if(selected == i ) {
             TFTscreen.fill(255,0,0);
-            
+            TFTscreen.stroke(255,255,255);
         } else {
             TFTscreen.fill(255,255,255);
+            TFTscreen.stroke(0,0,0);
         }
         
         TFTscreen.rect(x, nowy, 60, 30);
-        TFTscreen.stroke(150,200,175);
         TFTscreen.setTextSize(1);
         TFTscreen.text(gameName[i-1],x+15,nowy+10);
  
@@ -154,7 +154,7 @@ void DrawingMenu(int selected){
 
 void PPGame() {
     // save the width and height of the screen
-    TFTscreen.background(0,0,0);
+//    TFTscreen.background(0,0,0);
     TFTscreen.stroke(0,0,0);
     int myWidth = TFTscreen.width();
     int myHeight = TFTscreen.height();
