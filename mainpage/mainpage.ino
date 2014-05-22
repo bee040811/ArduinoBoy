@@ -40,6 +40,7 @@ int paddleY = 0;
 int oldPaddleX, oldPaddleY;
 int ballDirectionX = 1;
 int ballDirectionY = 1;
+char* gameName[] = {"game1","game2","game3"};
 
 int ballSpeed = 10; // lower numbers are faster
 
@@ -86,6 +87,17 @@ void loop() {
 }
 
 void welcome() {
+  // black background
+  TFTscreen.background(0,0,0);
+   // set the font color to white
+  TFTscreen.stroke(255,25,255);
+  // set the font size
+  TFTscreen.setTextSize(2);
+  // write the text to the top left corner of the screen
+  TFTscreen.text("Welcome\n ArduinoBoy",0,0);
+  delay(1000);
+  TFTscreen.background(0,0,0);
+  
 }
 
 void menu() {
@@ -106,7 +118,7 @@ void menu() {
         delay(500);
     } 
     int key = digitalRead(PinBtn);
-    Serial.println(digitalRead(PinBtn));
+    //Serial.println(digitalRead(PinBtn));
     if(key == 0) {
         state = 3;
         game = PPGAME;
@@ -120,28 +132,35 @@ void DrawingMenu(int selected){
     // position of the paddle if different from present
     int x = 55;
     int y = -30;
+    
     for(int i = 1 ; i <= 3 ; i++) {
         int nowy = y + i * 40;
         // draw the paddle on screen, save the current position
         // as the previous.
         if(selected == i ) {
             TFTscreen.fill(255,0,0);
+            
         } else {
             TFTscreen.fill(255,255,255);
         }
-        TFTscreen.rect(x-1, nowy-1, 60+2, 30+2);
-/*        TFTscreen.fill(0,0,0);
+        
         TFTscreen.rect(x, nowy, 60, 30);
-*/    }
+        TFTscreen.stroke(150,200,175);
+        TFTscreen.setTextSize(1);
+        TFTscreen.text(gameName[i-1],x+15,nowy+10);
+ 
+   }
 }
 
 void PPGame() {
     // save the width and height of the screen
+    TFTscreen.background(0,0,0);
+    TFTscreen.stroke(0,0,0);
     int myWidth = TFTscreen.width();
     int myHeight = TFTscreen.height();
     // map the paddle's location to the position of the potentiometers  
     paddleX = map(analogRead(A0), 0, 1024, 0, myWidth) - 20/2;
-    paddleY = map(analogRead(A1), 0, 512, 0, myHeight) - 5/2;
+    paddleY = map(450, 0, 512, 0, myHeight) - 5/2;
     // set the fill color to black and erase the previous
     // position of the paddle if different from present
     TFTscreen.fill(0,0,0);
