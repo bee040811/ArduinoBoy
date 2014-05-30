@@ -23,7 +23,10 @@ http://arduino.cc/en/Tutorial/TFTPong
 #define cs   10
 #define dc   9
 #define rst  8  
-#define PinBtn  4
+#define PinUP 4
+#define PinDOWN 5
+#define PinLEFT 6
+#define PinRIGHT 7
 
 #define PPGAME 3
 
@@ -62,14 +65,17 @@ void setup() {
     TFTscreen.begin();
     // black background
     TFTscreen.background(0,0,0);
-    pinMode(PinBtn,INPUT);
+    pinMode(PinLEFT,INPUT);
+    pinMode(PinRIGHT,INPUT);
+    pinMode(PinUP,INPUT);
+    pinMode(PinDOWN,INPUT);
 }
 
 void loop() {
     switch(state) {
         case 1:
             // ArduinoBoy
-            welcome();
+            welcome(10);
             state = 2;
             break;
         case 2:
@@ -86,7 +92,7 @@ void loop() {
     
 }
 
-void welcome() {
+void welcome(int time) {
   // black background
   TFTscreen.background(0,0,0);
    // set the font color to white
@@ -95,29 +101,28 @@ void welcome() {
   TFTscreen.setTextSize(2);
   // write the text to the top left corner of the screen
   TFTscreen.text("Welcome\n ArduinoBoy",0,0);
-  delay(1000);
+  delay(time);
   TFTscreen.background(0,0,0);
   
 }
 
 void menu() {
-    if(abs(analogRead(A0)-menuOrder) > 50){
-        if(menuOrder > analogRead(A0)) {
-            selected -=1;
-        } else {
-            selected +=1;
-        }
-        if(selected > 3) {
-            selected = 3;
-        } else if(selected < 1) {
-            selected = 1;
-        }
-        
-        DrawingMenu(selected);
-        menuOrder = analogRead(A0);
-        delay(500);
-    } 
-    int key = digitalRead(PinBtn);
+    if(digitalRead(PinUP) == 0) {
+        selected -=1;
+    } else if(digitalRead(PinDOWN) == 0){
+        selected +=1;
+    }
+    if(selected > 3) {
+        selected = 3;
+    } else if(selected < 1) {
+        selected = 1;
+    }
+    
+    DrawingMenu(selected);
+    menuOrder = analogRead(A0);
+    Serial.println(digitalRead(PinDOWN));
+    delay(200);
+    int key = digitalRead(PinLEFT);
     //Serial.println(digitalRead(PinBtn));
     if(key == 0) {
         state = 3;
