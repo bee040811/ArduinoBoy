@@ -42,6 +42,8 @@ http://arduino.cc/en/Tutorial/TFTPong
 // #define rst  1
 
 TFT TFTscreen = TFT(cs, dc, rst);
+int myWidth = TFTscreen.width();
+int myHeight = TFTscreen.height();
 
 // variables for the position of the ball and paddle
 int paddleX = 0;
@@ -80,7 +82,8 @@ void setup() {
 }
 
 void loop() {
-
+  DrawingBoundary();  
+  /*
     switch(state) {
         case 1:
             // ArduinoBoy
@@ -108,7 +111,7 @@ void loop() {
         default:
             break;    
     }
-
+*/
 }
 
 void welcome(int time) {
@@ -186,8 +189,6 @@ void PPGame() {
     // save the width and height of the screen
     //    TFTscreen.background(0,0,0);
     TFTscreen.stroke(0,0,0);
-    int myWidth = TFTscreen.width();
-    int myHeight = TFTscreen.height();
     // map the paddle's location to the position of the potentiometers  
     paddleX = map(analogRead(A0), 0, 1024, 0, myWidth) - 20/2;
     paddleY = map(450, 0, 512, 0, myHeight) - 5/2;
@@ -356,4 +357,21 @@ void SnakeGame() {
         }
 
     }
+}
+
+void DrawingBoundary() {
+        
+    TFTscreen.fill(0,200,255);
+    TFTscreen.rect(5, 20, 150, 2);
+    TFTscreen.rect(5, 20, 2, 98);
+    TFTscreen.rect(myWidth-7, 20, 2, 98);
+    TFTscreen.rect(5, myHeight-12, 150, 2);
+
+    // set the font color to white
+    TFTscreen.stroke(255,255,255);
+    // set the font size
+    TFTscreen.setTextSize(1);
+    TFTscreen.text("Score",5,10);
+    
+    delay(2000);
 }
