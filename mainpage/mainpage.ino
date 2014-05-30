@@ -90,6 +90,8 @@ void loop() {
         case 2:
             //menu        
             if(type == 0) {
+                // black background
+                TFTscreen.background(0,0,0);
                 menu(INITIAL);
                 type = 1;
             } else {
@@ -124,6 +126,7 @@ void welcome(int time) {
 }
 
 void menu(int status) {
+    
     bool change = false;
     if(digitalRead(PinUP) == 0) {
         selected -=1;
@@ -139,13 +142,16 @@ void menu(int status) {
     }
     if(change || status == INITIAL) {
         DrawingMenu(selected);
-    }
+    } 
+    delay(100);
     int key = digitalRead(PinLEFT);
     //Serial.println(digitalRead(PinBtn));
     if(key == 0) {
         state = 3;
-        selected = 1;
-        game = PPGAME;
+        
+        reset();
+        
+        game = selected;
         TFTscreen.background(0,0,0);
     }
 }
@@ -315,8 +321,22 @@ void SnakeMenu() {
         DrawingSnakeMenu(selected);
     }
     if(digitalRead(PinLEFT) == 0 ) {
-        gameState = START;
+        if(selected == 1) {
+            gameState = START;
+            // black background
+            TFTscreen.background(0,0,0);
+        } else if(selected == 2) {
+            reset();
+            state -= 1;
+            gameState = INITIAL;
+        }
     }
+}
+
+void reset() {
+    // reset
+    selected = 1;
+    type = 0;
 }
 
 void SnakeGame() {
