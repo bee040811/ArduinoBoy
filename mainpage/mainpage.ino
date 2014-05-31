@@ -29,6 +29,9 @@ http://arduino.cc/en/Tutorial/TFTPong
 #define PinRIGHT 7
 
 #define PPGAME 3
+#define SNAKE 2
+#define MAXLEN 15
+
 
 // pin definition for the Leonardo
 // #define cs   7
@@ -48,6 +51,20 @@ char* gameName[] = {"game1","game2","game3"};
 int ballSpeed = 10; // lower numbers are faster
 
 int ballX, ballY, oldBallX, oldBallY;
+/*snake variable*/
+int snakelen = 10;
+int Move;
+int direx;
+int direy;
+int currentx = 25;
+int currenty = 25;
+int lastx = 0;
+int lasty = 0;
+int foodx;
+int foody; 
+int posx[MAXLEN];
+int posy[MAXLEN];
+int n=0;
 
 // define ArduinoBoy(1) => menu state(2) => game(3) 
 
@@ -55,7 +72,7 @@ int state = 1;
 
 int menuOrder = -1;
 
-int game = 0;
+int game = 2;
 int selected = 1;
 
 void setup() {
@@ -69,6 +86,10 @@ void setup() {
     pinMode(PinRIGHT,INPUT);
     pinMode(PinUP,INPUT);
     pinMode(PinDOWN,INPUT);
+    for (int i=0;i < MAXLEN;i++){
+      posx[i] = 0;
+      posy[i] = 0;
+    }
 }
 
 void loop() {
@@ -76,20 +97,21 @@ void loop() {
         case 1:
             // ArduinoBoy
             welcome(10);
-            state = 2;
+            state = 3;
             break;
         case 2:
             //menu        
-            menu();
+            //menu();
             break;
         case 3:
             if(game == PPGAME)
             PPGame();
+            else if(game ==SNAKE)
+            snake();
             break;
         default:
             break;    
-    }
-    
+    }    
 }
 
 void welcome(int time) {
@@ -119,14 +141,13 @@ void menu() {
     }
     
     DrawingMenu(selected);
-    menuOrder = analogRead(A0);
     Serial.println(digitalRead(PinDOWN));
     delay(200);
     int key = digitalRead(PinLEFT);
     //Serial.println(digitalRead(PinBtn));
     if(key == 0) {
         state = 3;
-        game = PPGAME;
+        game = SNAKE;
         TFTscreen.background(0,0,0);
     }
 }
@@ -155,6 +176,72 @@ void DrawingMenu(int selected){
         TFTscreen.text(gameName[i-1],x+15,nowy+10);
  
    }
+}
+void snake()
+{
+  TFTscreen.background(0,0,0);
+  
+  
+  while (true){
+    changeDirection();
+    if(n < snakelen){      
+      posx[n] = currentx;
+      posy[n] = currenty;
+      n += 1;
+    }else{
+      posx[n] = currentx;
+      posy[n] = currenty;
+    }
+    
+    currentx += direx;
+    currenty += direy;
+    TFTscreen.stroke(255,255,255);
+    TFTscreen.rect(currentx,currenty,5,5);
+    
+    
+    if(n == snakelen){
+      lastx = posx[0];
+      lasty = posy[0];
+      for(int i = 1;i <= n;i++){
+        posx[i-1] = posx[i];
+        posy[i-1] = posy[i];
+      }
+      TFTscreen.stroke(0,0,0);
+      TFTscreen.rect(lastx,lasty,5,5);
+    }
+
+    delay(200);
+  }
+}
+
+void changeDirection()
+{
+  if(digitalRead(PinUP) == 0)
+    Move = 1;
+  else if(digitalRead(PinDOWN) == 0)
+    Move = 2;
+  else if(digitalRead(PinLEFT) == 0)
+    Move = 3;
+  else if(digitalRead(PinRIGHT) == 0)
+    Move = 4;
+    switch(Move){
+      case 1://up
+        direy = 1;
+        direx = 0;
+        break;
+      case 2://down
+        direy = -1;
+        direx = 0;
+        break;
+      case 3://right
+        direx = 1;
+        direy = 0;
+        break;
+      case 4://left
+        direx = -1;
+        direy = 0;
+        break;
+    }
 }
 
 void PPGame() {
@@ -186,7 +273,6 @@ void PPGame() {
     if (millis() % ballSpeed < 2) {
         moveBall();
     }
-
 }
 
 // this function determines the ball's position on screen
