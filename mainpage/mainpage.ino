@@ -22,7 +22,9 @@ http://arduino.cc/en/Tutorial/TFTPong
 // pin definition for the Uno
 #define cs   10
 #define dc   9
-#define rst  8
+#define rst  8  
+
+// PIN mode
 #define PinUP 4
 #define PinDOWN 5
 #define PinLEFT 6
@@ -31,17 +33,23 @@ http://arduino.cc/en/Tutorial/TFTPong
 #define ShowH 128
 #define PADDING 10
 
+// Game List
 #define PPGAME 3
 #define SNAKE 2
 #define MAXLEN 15
 
 
+// Game Status
+#define INITIAL 1
+#define START   2
 // pin definition for the Leonardo
 // #define cs   7
 // #define dc   0
 // #define rst  1
 
 TFT TFTscreen = TFT(cs, dc, rst);
+int myWidth = TFTscreen.width();
+int myHeight = TFTscreen.height();
 
 // variables for the position of the ball and paddle
 int paddleX = 0;
@@ -72,11 +80,13 @@ int n=0;
 // define ArduinoBoy(1) => menu state(2) => game(3) 
 
 int state = 1;
+int gameState = 1;
 
 int menuOrder = -1;
 
 int game = 2;
 int selected = 1;
+int type = 0;
 
 void setup() {
     // Serial screen
@@ -97,6 +107,7 @@ void setup() {
 }
 
 void loop() {
+  //DrawingBoundary();  
     switch(state) {
         case 1:
             // ArduinoBoy
@@ -104,54 +115,67 @@ void loop() {
             state = 3;
             break;
         case 2:
-            //menu        
-            //menu();
+            //menu
+            if(type == 0) {
+                // black background
+                TFTscreen.background(0,0,0);
+                menu(INITIAL);
+                type = 1;
+            } else {
+                menu(START);
+            }
             break;
         case 3:
-            if(game == PPGAME)
-            PPGame();
-            else if(game ==SNAKE)
-            snake();
+            if(game == PPGAME) {
+                PPGame();
+            } else if(game == SNAKE) {
+                SnakeGame();
+            }
             break;
         default:
             break;    
-    }    
+    }
 }
 
 void welcome(int time) {
-  // black background
-  TFTscreen.background(0,0,0);
-   // set the font color to white
-  TFTscreen.stroke(255,25,255);
-  // set the font size
-  TFTscreen.setTextSize(2);
-  // write the text to the top left corner of the screen
-  TFTscreen.text("Welcome\n ArduinoBoy",0,0);
-  delay(time);
-  TFTscreen.background(0,0,0);
-  
+    // black background
+    TFTscreen.background(0,0,0);
+    // set the font color to white
+    TFTscreen.stroke(255,25,255);
+    // set the font size
+    TFTscreen.setTextSize(2);
+    // write the text to the top left corner of the screen
+    TFTscreen.text("Welcome\n ArduinoBoy",0,0);
+    delay(time);
+    TFTscreen.background(0,0,0);
+
 }
 
-void menu() {
+void menu(int status) {
+    
+    bool change = false;
     if(digitalRead(PinUP) == 0) {
         selected -=1;
+        change = true;
     } else if(digitalRead(PinDOWN) == 0){
         selected +=1;
+        change = true;
     }
     if(selected > 3) {
         selected = 3;
     } else if(selected < 1) {
         selected = 1;
     }
-    
-    DrawingMenu(selected);
-    Serial.println(digitalRead(PinDOWN));
-    delay(200);
+    if(change || status == INITIAL) {
+        DrawingMenu(selected);
+    } 
+    delay(100);
     int key = digitalRead(PinLEFT);
     //Serial.println(digitalRead(PinBtn));
     if(key == 0) {
         state = 3;
-        game = SNAKE;
+        reset();
+        game = selected;
         TFTscreen.background(0,0,0);
     }
 }
@@ -162,7 +186,7 @@ void DrawingMenu(int selected){
     // position of the paddle if different from present
     int x = 55;
     int y = -30;
-    
+
     for(int i = 1 ; i <= 3 ; i++) {
         int nowy = y + i * 40;
         // draw the paddle on screen, save the current position
@@ -174,12 +198,12 @@ void DrawingMenu(int selected){
             TFTscreen.fill(255,255,255);
             TFTscreen.stroke(0,0,0);
         }
-        
+
         TFTscreen.rect(x, nowy, 60, 30);
         TFTscreen.setTextSize(1);
         TFTscreen.text(gameName[i-1],x+15,nowy+10);
- 
-   }
+
+    }
 }
 void snake()
 {
@@ -198,6 +222,10 @@ void snake()
     }   
     currentx += direx;
     currenty += direy;
+    if ( !checkBoundary(currentx, currenty)) {
+        DrawingEnd();
+        gameState = Initial;
+    }
     if(currentx >= ShowW){
       currentx = 0;
     }
@@ -242,7 +270,7 @@ void snake()
       TFTscreen.rect(lastx,lasty,5,5);
     }
 
-    delay(200);
+    delay(100);
   }
 }
 
@@ -301,10 +329,8 @@ void genBall()
 
 void PPGame() {
     // save the width and height of the screen
-//    TFTscreen.background(0,0,0);
+    //    TFTscreen.background(0,0,0);
     TFTscreen.stroke(0,0,0);
-    int myWidth = TFTscreen.width();
-    int myHeight = TFTscreen.height();
     // map the paddle's location to the position of the potentiometers  
     paddleX = map(analogRead(A0), 0, 1024, 0, myWidth) - 20/2;
     paddleY = map(450, 0, 512, 0, myHeight) - 5/2;
@@ -379,4 +405,132 @@ boolean inPaddle(int x, int y, int rectX, int rectY, int rectWidth, int rectHeig
     }
 
     return result;  
+}
+
+void DrawingEnd() {
+    // set the font color to white
+    TFTscreen.stroke(255,192,203);
+    // set the font size
+    TFTscreen.setTextSize(2);
+    // write the text to the top left corner of the screen
+    TFTscreen.text("Game Over",55,20);
+    // erase the ball's previous position
+    DrawingSnakeMenu(1);    
+}
+
+void DrawingSnakeInitial() {
+    // set the font color to white
+    TFTscreen.stroke(255,192,203);
+    // set the font size
+    TFTscreen.setTextSize(2);
+    // write the text to the top left corner of the screen
+    TFTscreen.text("SNAKE",55,20);
+    // erase the ball's previous position
+    DrawingSnakeMenu(1);    
+}
+
+void DrawingSnakeMenu(int selected) {
+    int y = 50;
+    for(int i = 1 ; i <= 2; i++) {
+        y = y + (i-1) * 25 ;
+
+        if(i == selected) {
+            TFTscreen.fill(255,0,0);
+            TFTscreen.stroke(255,255,255);
+        } else {
+            TFTscreen.fill(255,255,255);
+            TFTscreen.stroke(0,0,0);
+        }
+
+        // set the font size
+        TFTscreen.setTextSize(1);
+        // write the text to the top left corner of the screen
+        TFTscreen.rect(65, y, 40, 20);
+
+        if(i == 1) {
+            TFTscreen.text("START",70,y + 7);
+        } else {
+            TFTscreen.text("LEAVE",70,y + 7);
+        }
+
+    }
+}
+
+void SnakeMenu() {
+    bool change = false;
+    if(digitalRead(PinUP) == 0) {
+        selected -=1;
+        change = true;
+    } else if(digitalRead(PinDOWN) == 0){
+        selected +=1;
+        change = true;
+    }
+    if(selected > 2) {
+        selected = 2;
+    } else if(selected < 1) {
+        selected = 1;
+    }
+    if(change) {
+        DrawingSnakeMenu(selected);
+    }
+    if(digitalRead(PinLEFT) == 0 ) {
+        if(selected == 1) {
+            gameState = START;
+            // black background
+            TFTscreen.background(0,0,0);
+        } else if(selected == 2) {
+            reset();
+            state -= 1;
+            gameState = INITIAL;
+        }
+    }
+}
+
+void reset() {
+    // reset
+    selected = 1;
+    type = 0;
+}
+
+void SnakeGame() {
+    if(type == 0) {
+        TFTscreen.background(58,135,173);
+        DrawingSnakeInitial();
+        type = 1;
+    } else {
+        switch(gameState){
+            case INITIAL:
+                SnakeMenu();        
+                break;
+            case START:
+                snake();
+                break;
+            default:
+                break;
+        }
+
+    }
+}
+
+void DrawingBoundary() {
+        
+    TFTscreen.fill(0,200,255);
+    TFTscreen.rect(5, 20, 150, 2);
+    TFTscreen.rect(5, 20, 2, 98);
+    TFTscreen.rect(myWidth-7, 20, 2, 98);
+    TFTscreen.rect(5, myHeight-12, 150, 2);
+
+    // set the font color to white
+    TFTscreen.stroke(255,255,255);
+    // set the font size
+    TFTscreen.setTextSize(1);
+    TFTscreen.text("Score",5,10);
+    
+}
+
+bool checkBoundary(int x,int y) {
+    if( x > 5 && x < myWidth - 7 && y > 20 && y < myHeight-12 ) {
+        return true;
+    }
+    return false;
 }
