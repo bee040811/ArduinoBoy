@@ -63,14 +63,7 @@ int ballSpeed = 10; // lower numbers are faster
 
 int ballX, ballY, oldBallX, oldBallY;
 /*snake variable*/
-int snakelen = 10;
-int Move;
-int direx;
-int direy;
-int currentx = 25;
-int currenty = 25;
-int lastx = 0;
-int lasty = 0;
+
 int foodx;
 int foody; 
 int posx[MAXLEN];
@@ -100,14 +93,14 @@ void setup() {
     pinMode(PinUP,INPUT);
     pinMode(PinDOWN,INPUT);
     for (int i=0;i < MAXLEN;i++){
-      posx[i] = 0;
-      posy[i] = 0;
+        posx[i] = 0;
+        posy[i] = 0;
     }
 
 }
 
 void loop() {
-  //DrawingBoundary();  
+    //DrawingBoundary();  
     switch(state) {
         case 1:
             // ArduinoBoy
@@ -152,7 +145,7 @@ void welcome(int time) {
 }
 
 void DrawingScore(int val) {
-    
+
     TFTscreen.fill(0,0,0);
     TFTscreen.stroke(0,0,0);
     TFTscreen.rect(35, 8, 60, 10);
@@ -177,7 +170,7 @@ void numberPrint(int val,int x,int y) {
 }
 
 void menu(int status) {
-    
+
     bool change = false;
     if(digitalRead(PinUP) == 0) {
         selected -=1;
@@ -233,128 +226,159 @@ void DrawingMenu(int selected){
 
 void snake()
 {
-  TFTscreen.background(0,0,0);
-  genBall();
-  DrawingBoundary();
-  DrawingScore(0);
-  int score = 0;
-  int eatTimes = 0;
-  currentx = 25;
-  currenty = 25;
-  Move = 0;
-  direx=0;
-  direy=0;
+    int score = 0;
+    int eatTimes = 0;
+    int currentx = 25;
+    int currenty = 25;
+    int Move = 0;
+    int direx=0;
+    int direy=0;
+    int snakelen = 3;
+    int lastx = 0;
+    int lasty = 0;
+    
+    TFTscreen.background(0,0,0);
+    genBall();
+    DrawingBoundary();
+    DrawingScore(0);
 
-  while (true){
-    changeDirection();
-    if(n < snakelen){      
-      posx[n] = currentx;
-      posy[n] = currenty;
-      n += 1;
-    }else{
-      posx[n] = currentx;
-      posy[n] = currenty;
-    }   
-    currentx += direx;
-    currenty += direy;
-    if ( !checkBoundary(currentx, currenty)) {
-        DrawingEnd();
-        delay(2000);
-        gameState = INITIAL;
-        reset();
-        break;
+    n = 0;
+    for (int i=0;i < MAXLEN;i++){
+        posx[i] = 0;
+        posy[i] = 0;
     }
-    
-    if(currentx == foodx && currenty == foody){
-      //TFTscreen.stroke(0,0,0);
-      //TFTscreen.rect(foodx,foody,5,5);
-      int prefoodx;
-      int prefoody;
-      prefoodx = foodx;
-      prefoody = foody;
-      TFTscreen.stroke(0,0,0);
-      TFTscreen.fill(0,0,0);
-      TFTscreen.rect(prefoodx,prefoody,5,5);
-      genBall();
-      snakelen+=1;
-      score = calculateScore(score, ++eatTimes);
-      DrawingScore(score);
+
+    while (true){
+        changeDirection(direx,direy,Move);
+        if(n < snakelen){      
+            posx[n] = currentx;
+            posy[n] = currenty;
+            n += 1;
+        }else{
+            posx[n-1] = currentx;
+            posy[n-1] = currenty;
+        }   
+        currentx += direx;
+        currenty += direy;
+        if ( !checkBoundary(currentx, currenty)) {
+            DrawingEnd();
+            delay(2000);
+            gameState = INITIAL;
+            reset();
+            break;
+        }
+
+        if(currentx == foodx && currenty == foody){
+            //TFTscreen.stroke(0,0,0);
+            //TFTscreen.rect(foodx,foody,5,5);
+            int prefoodx;
+            int prefoody;
+            prefoodx = foodx;
+            prefoody = foody;
+            TFTscreen.stroke(0,0,0);
+            TFTscreen.fill(0,0,0);
+            TFTscreen.rect(prefoodx,prefoody,5,5);
+            genBall();
+            if(snakelen < 15)
+            {
+                snakelen+=1;
+                score = calculateScore(score, ++eatTimes);
+                DrawingScore(score);
+            }
+        }
+        TFTscreen.stroke(255,255,255);
+        TFTscreen.fill(255,255,255);
+        TFTscreen.rect(currentx,currenty,5,5);
+
+        if(n == snakelen){
+            lastx = posx[0];
+            lasty = posy[0];
+            for(int i = 1;i <= n;i++){
+                posx[i-1] = posx[i];
+                posy[i-1] = posy[i];
+            }
+            TFTscreen.stroke(0,0,0);
+            TFTscreen.fill(0,0,0);
+            TFTscreen.rect(lastx,lasty,5,5);
+        }
+        delay(100);
     }
-    TFTscreen.stroke(255,255,255);
-    TFTscreen.fill(255,255,255);
-    TFTscreen.rect(currentx,currenty,5,5);
-    
-    if(n == snakelen){
-      lastx = posx[0];
-      lasty = posy[0];
-      for(int i = 1;i <= n;i++){
-        posx[i-1] = posx[i];
-        posy[i-1] = posy[i];
-      }
-      TFTscreen.stroke(0,0,0);
-      TFTscreen.fill(0,0,0);
-      TFTscreen.rect(lastx,lasty,5,5);
-    }
-    delay(100);
-  }
 }
 
-void changeDirection()
+void changeDirection(int &direx, int &direy,int &Move)
 {
-  if(digitalRead(PinUP) == 0)
-    Move = 1;
-  else if(digitalRead(PinDOWN) == 0)
-    Move = 2;
-  else if(digitalRead(PinLEFT) == 0)
-    Move = 3;
-  else if(digitalRead(PinRIGHT) == 0)
-    Move = 4;
+    if(digitalRead(PinUP) == 0)
+        Move = 1;
+    else if(digitalRead(PinDOWN) == 0)
+        Move = 2;
+    else if(digitalRead(PinLEFT) == 0)
+        Move = 3;
+    else if(digitalRead(PinRIGHT) == 0)
+        Move = 4;
     switch(Move){
-      case 1://up
-        if(direy == 0){
-          direy = -5;
-          direx = 0;
-        }      
-        break;
-      case 2://down
-        if(direy == 0){
-          direy = 5;
-          direx = 0;
-        }    
-        break;
-      case 3://right
-        if(direx == 0){
-          direx = -5;
-          direy = 0;
-        }
-        break;
-      case 4://left
-      if(direx == 0){
-        direx = 5;
-        direy = 0;
-      }
-        break;
+        case 1://up
+            if(direy == 0){
+                direy = -5;
+                direx = 0;
+            }      
+            break;
+        case 2://down
+            if(direy == 0){
+                direy = 5;
+                direx = 0;
+            }    
+            break;
+        case 3://right
+            if(direx == 0){
+                direx = -5;
+                direy = 0;
+            }
+            break;
+        case 4://left
+            if(direx == 0){
+                direx = 5;
+                direy = 0;
+            }
+            break;
     }
 }
 
 void genBall()
 {
-  int mx,my;
-  foodx = random(PADDING,ShowW-PADDING);
-  foody = random(PADDING,ShowH-PADDING);
-  mx = foodx/5;
-  my = foody/5;
-  foodx = mx * 5;
-  foody = my * 5;
-  Serial.println(foodx);
-  Serial.println(foody);
-  if(!checkBoundary(foodx,foody)) {
-    genBall();
-  }
-  TFTscreen.stroke(255,255,255);
-  TFTscreen.rect(foodx,foody,5,5);
+    int mx,my;
+    foodx = random(PADDING,ShowW-PADDING);
+    foody = random(PADDING,ShowH-PADDING);
+    mx = foodx/5;
+    my = foody/5;
+    foodx = mx * 5;
+    foody = my * 5;
+    Serial.println(foodx);
+    Serial.println(foody);
+    if(!checkball(foodx,foody)){
+        genBall();
+    }
+    if(!checkBoundary(foodx,foody)) {
+        genBall();
+    }
+    TFTscreen.stroke(255,255,255);
+    TFTscreen.rect(foodx,foody,5,5);
 }
 
+bool checkball(int ballx,int bally)
+{
+    int x = 0;
+    for(x = 0;x < MAXLEN;x++)
+    {
+        if(ballx == posx[x] && bally == posy[x])
+        {
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+
+}
 void PPGame() {
     // save the width and height of the screen
     //    TFTscreen.background(0,0,0);
@@ -540,7 +564,7 @@ void SnakeGame() {
 }
 
 void DrawingBoundary() {
-        
+
     TFTscreen.fill(0,200,255);
     TFTscreen.rect(5, 20, 150, 2);
     TFTscreen.rect(5, 20, 2, 98);
@@ -552,7 +576,7 @@ void DrawingBoundary() {
     // set the font size
     TFTscreen.setTextSize(1);
     TFTscreen.text("Score",5,10);
-    
+
 }
 
 int calculateScore(int val,int count) {
