@@ -209,6 +209,13 @@ void snake()
 {
   TFTscreen.background(0,0,0);
   genBall();
+  DrawingBoundary();
+
+  currentx = 25;
+  currenty = 25;
+  Move = 0;
+  direx=0;
+  direy=0;
 
   while (true){
     changeDirection();
@@ -224,7 +231,9 @@ void snake()
     currenty += direy;
     if ( !checkBoundary(currentx, currenty)) {
         DrawingEnd();
-        gameState = Initial;
+        gameState = INITIAL;
+        reset();
+        break;
     }
     if(currentx >= ShowW){
       currentx = 0;
@@ -250,13 +259,11 @@ void snake()
       TFTscreen.rect(prefoodx,prefoody,5,5);
       genBall();
       snakelen+=1;
-      
     
     }
     TFTscreen.stroke(255,255,255);
     TFTscreen.fill(255,255,255);
     TFTscreen.rect(currentx,currenty,5,5);
-    
     
     if(n == snakelen){
       lastx = posx[0];
@@ -323,6 +330,9 @@ void genBall()
   foody = my * 5;
   Serial.println(foodx);
   Serial.println(foody);
+  if(!checkBoundary(foodx,foody)) {
+    genBall();
+  }
   TFTscreen.stroke(255,255,255);
   TFTscreen.rect(foodx,foody,5,5);
 }
