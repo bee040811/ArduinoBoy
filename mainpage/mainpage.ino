@@ -209,19 +209,24 @@ void snake()
   int Move = 0;
   int direx=0;
   int direy=0;
-  int snakelen = 10;
+  int snakelen = 3;
   int lastx = 0;
   int lasty = 0;
+  n = 0;
+  for (int i=0;i < MAXLEN;i++){
+      posx[i] = 0;
+      posy[i] = 0;
+   }
 
   while (true){
     changeDirection(direx,direy,Move);
-    if(n < snakelen-1){      
+    if(n < snakelen){      
       posx[n] = currentx;
       posy[n] = currenty;
       n += 1;
     }else{
-      posx[n] = currentx;
-      posy[n] = currenty;
+      posx[n-1] = currentx;
+      posy[n-1] = currenty;
     }   
     currentx += direx;
     currenty += direy;
