@@ -204,7 +204,7 @@ void snake()
   genBall();
   DrawingBoundary();
 
-  intcurrentx = 25;
+  int currentx = 25;
   int currenty = 25;
   int Move = 0;
   int direx=0;
@@ -214,8 +214,8 @@ void snake()
   int lasty = 0;
 
   while (true){
-    changeDirection();
-    if(n < snakelen){      
+    changeDirection(direx,direy,Move);
+    if(n < snakelen-1){      
       posx[n] = currentx;
       posy[n] = currenty;
       n += 1;
@@ -279,7 +279,7 @@ void snake()
   }
 }
 
-void changeDirection()
+void changeDirection(int &direx, int &direy,int &Move)
 {
   if(digitalRead(PinUP) == 0)
     Move = 1;
@@ -328,6 +328,9 @@ void genBall()
   foody = my * 5;
   Serial.println(foodx);
   Serial.println(foody);
+  if(!checkball(foodx,foody)){
+    genBall();
+  }
   if(!checkBoundary(foodx,foody)) {
     genBall();
   }
@@ -335,6 +338,21 @@ void genBall()
   TFTscreen.rect(foodx,foody,5,5);
 }
 
+bool checkball(int ballx,int bally)
+{
+  int x = 0;
+  for(x = 0;x < MAXLEN;x++)
+  {
+    if(ballx == posx[x] && bally == posy[x])
+    {
+      return false;
+    }else{
+      return true;
+    }
+    
+  }
+  
+}
 void PPGame() {
     // save the width and height of the screen
     //    TFTscreen.background(0,0,0);
