@@ -375,3 +375,10 @@ void DrawingBoundary() {
     
     delay(2000);
 }
+
+bool checkBoundary(int x,int y) {
+    if( x > 5 && x < myWidth - 7 && y > 20 && y < myHeight-12 ) {
+        return true;
+    }
+    return false
+}
