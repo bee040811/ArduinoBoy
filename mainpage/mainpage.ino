@@ -63,14 +63,7 @@ int ballSpeed = 10; // lower numbers are faster
 
 int ballX, ballY, oldBallX, oldBallY;
 /*snake variable*/
-int snakelen = 10;
-int Move;
-int direx;
-int direy;
-int currentx = 25;
-int currenty = 25;
-int lastx = 0;
-int lasty = 0;
+
 int foodx;
 int foody; 
 int posx[MAXLEN];
@@ -211,11 +204,14 @@ void snake()
   genBall();
   DrawingBoundary();
 
-  currentx = 25;
-  currenty = 25;
-  Move = 0;
-  direx=0;
-  direy=0;
+  intcurrentx = 25;
+  int currenty = 25;
+  int Move = 0;
+  int direx=0;
+  int direy=0;
+  int snakelen = 10;
+  int lastx = 0;
+  int lasty = 0;
 
   while (true){
     changeDirection();
@@ -258,8 +254,10 @@ void snake()
       TFTscreen.fill(0,0,0);
       TFTscreen.rect(prefoodx,prefoody,5,5);
       genBall();
-      snakelen+=1;
-    
+      if(snakelen < 15)
+      {
+        snakelen+=1;
+      }
     }
     TFTscreen.stroke(255,255,255);
     TFTscreen.fill(255,255,255);
