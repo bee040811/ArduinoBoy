@@ -22,11 +22,14 @@ http://arduino.cc/en/Tutorial/TFTPong
 // pin definition for the Uno
 #define cs   10
 #define dc   9
-#define rst  8  
+#define rst  8
 #define PinUP 4
 #define PinDOWN 5
 #define PinLEFT 6
 #define PinRIGHT 7
+#define ShowW 160
+#define ShowH 128
+#define PADDING 10
 
 #define PPGAME 3
 #define SNAKE 2
@@ -90,6 +93,7 @@ void setup() {
       posx[i] = 0;
       posy[i] = 0;
     }
+
 }
 
 void loop() {
@@ -180,8 +184,8 @@ void DrawingMenu(int selected){
 void snake()
 {
   TFTscreen.background(0,0,0);
-  
-  
+  genBall();
+
   while (true){
     changeDirection();
     if(n < snakelen){      
@@ -191,11 +195,38 @@ void snake()
     }else{
       posx[n] = currentx;
       posy[n] = currenty;
-    }
-    
+    }   
     currentx += direx;
     currenty += direy;
+    if(currentx >= ShowW){
+      currentx = 0;
+    }
+    else if(currentx <= 0){
+      currentx = ShowW;
+    }
+    if(currenty >= ShowH){
+      currenty = 0;
+    }
+    else if(currenty <= 0){
+      currenty = ShowH;
+    }
+    if(currentx == foodx && currenty == foody){
+      //TFTscreen.stroke(0,0,0);
+      //TFTscreen.rect(foodx,foody,5,5);
+      int prefoodx;
+      int prefoody;
+      prefoodx = foodx;
+      prefoody = foody;
+      TFTscreen.stroke(0,0,0);
+      TFTscreen.fill(0,0,0);
+      TFTscreen.rect(prefoodx,prefoody,5,5);
+      genBall();
+      snakelen+=1;
+      
+    
+    }
     TFTscreen.stroke(255,255,255);
+    TFTscreen.fill(255,255,255);
     TFTscreen.rect(currentx,currenty,5,5);
     
     
@@ -207,6 +238,7 @@ void snake()
         posy[i-1] = posy[i];
       }
       TFTscreen.stroke(0,0,0);
+      TFTscreen.fill(0,0,0);
       TFTscreen.rect(lastx,lasty,5,5);
     }
 
@@ -226,22 +258,45 @@ void changeDirection()
     Move = 4;
     switch(Move){
       case 1://up
-        direy = 1;
-        direx = 0;
+        if(direy == 0){
+          direy = -5;
+          direx = 0;
+        }      
         break;
       case 2://down
-        direy = -1;
-        direx = 0;
+        if(direy == 0){
+          direy = 5;
+          direx = 0;
+        }    
         break;
       case 3://right
-        direx = 1;
-        direy = 0;
+        if(direx == 0){
+          direx = -5;
+          direy = 0;
+        }
         break;
       case 4://left
-        direx = -1;
+      if(direx == 0){
+        direx = 5;
         direy = 0;
+      }
         break;
     }
+}
+
+void genBall()
+{
+  int mx,my;
+  foodx = random(PADDING,ShowW-PADDING);
+  foody = random(PADDING,ShowH-PADDING);
+  mx = foodx/5;
+  my = foody/5;
+  foodx = mx * 5;
+  foody = my * 5;
+  Serial.println(foodx);
+  Serial.println(foody);
+  TFTscreen.stroke(255,255,255);
+  TFTscreen.rect(foodx,foody,5,5);
 }
 
 void PPGame() {
