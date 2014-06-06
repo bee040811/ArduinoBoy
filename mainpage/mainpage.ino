@@ -151,6 +151,31 @@ void welcome(int time) {
 
 }
 
+void DrawingScore(int val) {
+    
+    TFTscreen.fill(0,0,0);
+    TFTscreen.stroke(0,0,0);
+    TFTscreen.rect(35, 8, 60, 10);
+    // set the font color to white
+    TFTscreen.stroke(255,255,255);
+    // set the font size
+    TFTscreen.setTextSize(1);
+    String b = String(val);
+    const char *a = b.c_str();
+    TFTscreen.text(a,40,10);
+}
+
+void numberPrint(int val,int x,int y) {
+    switch(val) {
+        case 1:
+            TFTscreen.text("1",x,y);
+            break;
+        case 2:
+            TFTscreen.text("2",x,y);
+            break;
+    }
+}
+
 void menu(int status) {
     
     bool change = false;
@@ -205,12 +230,15 @@ void DrawingMenu(int selected){
 
     }
 }
+
 void snake()
 {
   TFTscreen.background(0,0,0);
   genBall();
   DrawingBoundary();
-
+  DrawingScore(0);
+  int score = 0;
+  int eatTimes = 0;
   currentx = 25;
   currenty = 25;
   Move = 0;
@@ -231,22 +259,12 @@ void snake()
     currenty += direy;
     if ( !checkBoundary(currentx, currenty)) {
         DrawingEnd();
+        delay(2000);
         gameState = INITIAL;
         reset();
         break;
     }
-    if(currentx >= ShowW){
-      currentx = 0;
-    }
-    else if(currentx <= 0){
-      currentx = ShowW;
-    }
-    if(currenty >= ShowH){
-      currenty = 0;
-    }
-    else if(currenty <= 0){
-      currenty = ShowH;
-    }
+    
     if(currentx == foodx && currenty == foody){
       //TFTscreen.stroke(0,0,0);
       //TFTscreen.rect(foodx,foody,5,5);
@@ -259,7 +277,8 @@ void snake()
       TFTscreen.rect(prefoodx,prefoody,5,5);
       genBall();
       snakelen+=1;
-    
+      score = calculateScore(score, ++eatTimes);
+      DrawingScore(score);
     }
     TFTscreen.stroke(255,255,255);
     TFTscreen.fill(255,255,255);
@@ -276,7 +295,6 @@ void snake()
       TFTscreen.fill(0,0,0);
       TFTscreen.rect(lastx,lasty,5,5);
     }
-
     delay(100);
   }
 }
@@ -419,13 +437,12 @@ boolean inPaddle(int x, int y, int rectX, int rectY, int rectWidth, int rectHeig
 
 void DrawingEnd() {
     // set the font color to white
-    TFTscreen.stroke(255,192,203);
+    TFTscreen.stroke(125,192,203);
     // set the font size
     TFTscreen.setTextSize(2);
     // write the text to the top left corner of the screen
-    TFTscreen.text("Game Over",55,20);
+    TFTscreen.text("Game Over",myHeight/3,myWidth/3);
     // erase the ball's previous position
-    DrawingSnakeMenu(1);    
 }
 
 void DrawingSnakeInitial() {
@@ -538,8 +555,13 @@ void DrawingBoundary() {
     
 }
 
+int calculateScore(int val,int count) {
+    val += 5*count;
+    return val;
+}
+
 bool checkBoundary(int x,int y) {
-    if( x > 5 && x < myWidth - 7 && y > 20 && y < myHeight-12 ) {
+    if( x >= 5 && x <= myWidth - 7 && y >= 20 && y <= myHeight-14 ) {
         return true;
     }
     return false;
