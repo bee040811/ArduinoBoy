@@ -63,14 +63,7 @@ int ballSpeed = 10; // lower numbers are faster
 
 int ballX, ballY, oldBallX, oldBallY;
 /*snake variable*/
-int snakelen = 10;
-int Move;
-int direx;
-int direy;
-int currentx = 25;
-int currenty = 25;
-int lastx = 0;
-int lasty = 0;
+
 int foodx;
 int foody; 
 int posx[MAXLEN];
@@ -209,10 +202,20 @@ void snake()
 {
   TFTscreen.background(0,0,0);
   genBall();
+  DrawingBoundary();
+
+  int currentx = 25;
+  int currenty = 25;
+  int Move = 0;
+  int direx=0;
+  int direy=0;
+  int snakelen = 10;
+  int lastx = 0;
+  int lasty = 0;
 
   while (true){
-    changeDirection();
-    if(n < snakelen){      
+    changeDirection(direx,direy,Move);
+    if(n < snakelen-1){      
       posx[n] = currentx;
       posy[n] = currenty;
       n += 1;
@@ -224,7 +227,9 @@ void snake()
     currenty += direy;
     if ( !checkBoundary(currentx, currenty)) {
         DrawingEnd();
-        gameState = Initial;
+        gameState = INITIAL;
+        reset();
+        break;
     }
     if(currentx >= ShowW){
       currentx = 0;
@@ -249,14 +254,14 @@ void snake()
       TFTscreen.fill(0,0,0);
       TFTscreen.rect(prefoodx,prefoody,5,5);
       genBall();
-      snakelen+=1;
-      
-    
+      if(snakelen < 15)
+      {
+        snakelen+=1;
+      }
     }
     TFTscreen.stroke(255,255,255);
     TFTscreen.fill(255,255,255);
     TFTscreen.rect(currentx,currenty,5,5);
-    
     
     if(n == snakelen){
       lastx = posx[0];
@@ -274,7 +279,7 @@ void snake()
   }
 }
 
-void changeDirection()
+void changeDirection(int &direx, int &direy,int &Move)
 {
   if(digitalRead(PinUP) == 0)
     Move = 1;
@@ -323,10 +328,31 @@ void genBall()
   foody = my * 5;
   Serial.println(foodx);
   Serial.println(foody);
+  if(!checkball(foodx,foody)){
+    genBall();
+  }
+  if(!checkBoundary(foodx,foody)) {
+    genBall();
+  }
   TFTscreen.stroke(255,255,255);
   TFTscreen.rect(foodx,foody,5,5);
 }
 
+bool checkball(int ballx,int bally)
+{
+  int x = 0;
+  for(x = 0;x < MAXLEN;x++)
+  {
+    if(ballx == posx[x] && bally == posy[x])
+    {
+      return false;
+    }else{
+      return true;
+    }
+    
+  }
+  
+}
 void PPGame() {
     // save the width and height of the screen
     //    TFTscreen.background(0,0,0);
