@@ -1,16 +1,16 @@
 #include "PingPongGame.h"
 
-PP::PP(int myWidth,int myHeight) {
+PP::PP(int w,int h) {
     // variables for the position of the ball and paddle
-    paddleX = myWidth/2;
-    paddleY = myHeight-20;
+    paddleX = w/2;
+    paddleY = h-20;
     oldPaddleX = -1;
     oldPaddleY = -1;
     ballDirectionX = 1;
     ballDirectionY = 1;
     ballSpeed = 20; // lower numbers are faster
-    this->myWidth = myWidth;
-    this->myHeight = myHeight;
+    myWidth = w;
+    myHeight = h;
     Serial.begin(9600);
 }
 
@@ -19,6 +19,10 @@ void PP::PPGame(int& state, TFT TFTscreen) {
     // save the width and height of the screen
     //    TFTscreen.background(0,0,0);
     reset();
+    
+    ballX = 5;
+    ballY = 15;
+
     TFTscreen.stroke(0,0,0);
     // map the paddle's location to the position of the potentiometers
     int shiftx = 512;
@@ -89,7 +93,12 @@ void PP::moveBall(int& state,TFT TFTscreen) {
 
     // check if the ball and the paddle occupy the same space on screen
     if (inPaddle(ballX, ballY, paddleX, paddleY, 20, 5)) {
-        ballDirectionX = -ballDirectionX;
+        if(ballX < paddleX + 10) {
+            ballDirectionX = -1;
+        } else {
+            ballDirectionX = 1;
+        }
+
         ballDirectionY = -ballDirectionY;
         ballX += ballDirectionX*5;
         ballY += ballDirectionY*5;
