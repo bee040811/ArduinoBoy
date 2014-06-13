@@ -1,3 +1,4 @@
+
 /*
 
    TFT Pong
@@ -16,40 +17,26 @@ http://arduino.cc/en/Tutorial/TFTPong
 
  */
 
-#include <TFT.h>  // Arduino LCD library
+#include <TFT.h>
 #include <SPI.h>
+#include <SnakeGame.h>
+
 
 // pin definition for the Uno
 #define cs   10
 #define dc   9
 #define rst  8  
 
-// PIN mode
-#define PinUP 4
-#define PinDOWN 5
-#define PinLEFT 6
-#define PinRIGHT 7
-#define ShowW 160
-#define ShowH 128
-#define PADDING 10
 
 // Game List
 #define PPGAME 3
 #define SNAKE 2
-#define MAXLEN 15
-
-
-// Game Status
-#define INITIAL 1
-#define START   2
-// pin definition for the Leonardo
-// #define cs   7
-// #define dc   0
-// #define rst  1
 
 TFT TFTscreen = TFT(cs, dc, rst);
 int myWidth = TFTscreen.width();
 int myHeight = TFTscreen.height();
+
+Game snake_game = Game(myWidth,myHeight);
 
 // variables for the position of the ball and paddle
 int paddleX = myWidth/2;
@@ -62,18 +49,10 @@ char* gameName[] = {"game1","game2","game3"};
 int ballSpeed = 20; // lower numbers are faster
 
 int ballX, ballY, oldBallX, oldBallY;
-/*snake variable*/
-
-int foodx;
-int foody; 
-int posx[MAXLEN];
-int posy[MAXLEN];
-int n=0;
 
 // define ArduinoBoy(1) => menu state(2) => game(3) 
 
 int state = 1;
-int gameState = 1;
 
 int menuOrder = -1;
 
@@ -92,10 +71,6 @@ void setup() {
     pinMode(PinRIGHT,INPUT);
     pinMode(PinUP,INPUT);
     pinMode(PinDOWN,INPUT);
-    for (int i=0;i < MAXLEN;i++){
-        posx[i] = 0;
-        posy[i] = 0;
-    }
 
 }
 
@@ -122,7 +97,7 @@ void loop() {
             if(game == PPGAME) {
                 PPGame();
             } else if(game == SNAKE) {
-                SnakeGame();
+                snake_game.SnakePlay(state,TFTscreen);
             }
             break;
         default:
@@ -144,19 +119,6 @@ void welcome(int time) {
 
 }
 
-void DrawingScore(int val) {
-
-    TFTscreen.fill(0,0,0);
-    TFTscreen.stroke(0,0,0);
-    TFTscreen.rect(35, 8, 60, 10);
-    // set the font color to white
-    TFTscreen.stroke(255,255,255);
-    // set the font size
-    TFTscreen.setTextSize(1);
-    String b = String(val);
-    const char *a = b.c_str();
-    TFTscreen.text(a,40,10);
-}
 
 void numberPrint(int val,int x,int y) {
     switch(val) {
@@ -224,161 +186,6 @@ void DrawingMenu(int selected){
     }
 }
 
-void snake()
-{
-    int score = 0;
-    int eatTimes = 0;
-    int currentx = 25;
-    int currenty = 25;
-    int Move = 0;
-    int direx=0;
-    int direy=0;
-    int snakelen = 3;
-    int lastx = 0;
-    int lasty = 0;
-    
-    TFTscreen.background(0,0,0);
-    genBall();
-    DrawingBoundary();
-    DrawingScore(0);
-
-    n = 0;
-    for (int i=0;i < MAXLEN;i++){
-        posx[i] = 0;
-        posy[i] = 0;
-    }
-
-    while (true){
-        changeDirection(direx,direy,Move);
-        if(n < snakelen){      
-            posx[n] = currentx;
-            posy[n] = currenty;
-            n += 1;
-        }else{
-            posx[n-1] = currentx;
-            posy[n-1] = currenty;
-        }   
-        currentx += direx;
-        currenty += direy;
-        if ( !checkBoundary(currentx, currenty)) {
-            DrawingEnd();
-            delay(2000);
-            gameState = INITIAL;
-            reset();
-            break;
-        }
-
-        if(currentx == foodx && currenty == foody){
-            //TFTscreen.stroke(0,0,0);
-            //TFTscreen.rect(foodx,foody,5,5);
-            int prefoodx;
-            int prefoody;
-            prefoodx = foodx;
-            prefoody = foody;
-            TFTscreen.stroke(0,0,0);
-            TFTscreen.fill(0,0,0);
-            TFTscreen.rect(prefoodx,prefoody,5,5);
-            genBall();
-            if(snakelen < 15)
-            {
-                snakelen+=1;
-                score = calculateScore(score, ++eatTimes);
-                DrawingScore(score);
-            }
-        }
-        TFTscreen.stroke(255,255,255);
-        TFTscreen.fill(255,255,255);
-        TFTscreen.rect(currentx,currenty,5,5);
-
-        if(n == snakelen){
-            lastx = posx[0];
-            lasty = posy[0];
-            for(int i = 1;i <= n;i++){
-                posx[i-1] = posx[i];
-                posy[i-1] = posy[i];
-            }
-            TFTscreen.stroke(0,0,0);
-            TFTscreen.fill(0,0,0);
-            TFTscreen.rect(lastx,lasty,5,5);
-        }
-        delay(100);
-    }
-}
-
-void changeDirection(int &direx, int &direy,int &Move)
-{
-    if(digitalRead(PinUP) == 0)
-        Move = 1;
-    else if(digitalRead(PinDOWN) == 0)
-        Move = 2;
-    else if(digitalRead(PinLEFT) == 0)
-        Move = 3;
-    else if(digitalRead(PinRIGHT) == 0)
-        Move = 4;
-    switch(Move){
-        case 1://up
-            if(direy == 0){
-                direy = -5;
-                direx = 0;
-            }      
-            break;
-        case 2://down
-            if(direy == 0){
-                direy = 5;
-                direx = 0;
-            }    
-            break;
-        case 3://right
-            if(direx == 0){
-                direx = -5;
-                direy = 0;
-            }
-            break;
-        case 4://left
-            if(direx == 0){
-                direx = 5;
-                direy = 0;
-            }
-            break;
-    }
-}
-
-void genBall()
-{
-    int mx,my;
-    foodx = random(PADDING,ShowW-PADDING);
-    foody = random(PADDING,ShowH-PADDING);
-    mx = foodx/5;
-    my = foody/5;
-    foodx = mx * 5;
-    foody = my * 5;
-    Serial.println(foodx);
-    Serial.println(foody);
-    if(!checkball(foodx,foody)){
-        genBall();
-    }
-    if(!checkBoundary(foodx,foody)) {
-        genBall();
-    }
-    TFTscreen.stroke(255,255,255);
-    TFTscreen.rect(foodx,foody,5,5);
-}
-
-bool checkball(int ballx,int bally)
-{
-    int x = 0;
-    for(x = 0;x < MAXLEN;x++)
-    {
-        if(ballx == posx[x] && bally == posy[x])
-        {
-            return false;
-        }else{
-            return true;
-        }
-
-    }
-
-}
 void PPGame() {
     // save the width and height of the screen
     //    TFTscreen.background(0,0,0);
@@ -504,83 +311,8 @@ boolean inPaddle(int x, int y, int rectX, int rectY, int rectWidth, int rectHeig
     return result;  
 }
 
-void DrawingEnd() {
-    // set the font color to white
-    TFTscreen.stroke(125,192,203);
-    // set the font size
-    TFTscreen.setTextSize(2);
-    // write the text to the top left corner of the screen
-    TFTscreen.text("Game Over",myHeight/3,myWidth/3);
-    // erase the ball's previous position
-}
 
-void DrawingSnakeInitial() {
-    // set the font color to white
-    TFTscreen.stroke(255,192,203);
-    // set the font size
-    TFTscreen.setTextSize(2);
-    // write the text to the top left corner of the screen
-    TFTscreen.text("SNAKE",55,20);
-    // erase the ball's previous position
-    DrawingSnakeMenu(1);    
-}
 
-void DrawingSnakeMenu(int selected) {
-    int y = 50;
-    for(int i = 1 ; i <= 2; i++) {
-        y = y + (i-1) * 25 ;
-
-        if(i == selected) {
-            TFTscreen.fill(255,0,0);
-            TFTscreen.stroke(255,255,255);
-        } else {
-            TFTscreen.fill(255,255,255);
-            TFTscreen.stroke(0,0,0);
-        }
-
-        // set the font size
-        TFTscreen.setTextSize(1);
-        // write the text to the top left corner of the screen
-        TFTscreen.rect(65, y, 40, 20);
-
-        if(i == 1) {
-            TFTscreen.text("START",70,y + 7);
-        } else {
-            TFTscreen.text("LEAVE",70,y + 7);
-        }
-
-    }
-}
-
-void SnakeMenu() {
-    bool change = false;
-    if(digitalRead(PinUP) == 0) {
-        selected -=1;
-        change = true;
-    } else if(digitalRead(PinDOWN) == 0){
-        selected +=1;
-        change = true;
-    }
-    if(selected > 2) {
-        selected = 2;
-    } else if(selected < 1) {
-        selected = 1;
-    }
-    if(change) {
-        DrawingSnakeMenu(selected);
-    }
-    if(digitalRead(PinLEFT) == 0 ) {
-        if(selected == 1) {
-            gameState = START;
-            // black background
-            TFTscreen.background(0,0,0);
-        } else if(selected == 2) {
-            reset();
-            state -= 1;
-            gameState = INITIAL;
-        }
-    }
-}
 
 void reset() {
     // reset
@@ -588,50 +320,5 @@ void reset() {
     type = 0;
 }
 
-void SnakeGame() {
-    if(type == 0) {
-        TFTscreen.background(58,135,173);
-        DrawingSnakeInitial();
-        type = 1;
-    } else {
-        switch(gameState){
-            case INITIAL:
-                SnakeMenu();        
-                break;
-            case START:
-                snake();
-                break;
-            default:
-                break;
-        }
 
-    }
-}
 
-void DrawingBoundary() {
-
-    TFTscreen.fill(0,200,255);
-    TFTscreen.rect(5, 20, 150, 2);
-    TFTscreen.rect(5, 20, 2, 98);
-    TFTscreen.rect(myWidth-7, 20, 2, 98);
-    TFTscreen.rect(5, myHeight-12, 150, 2);
-
-    // set the font color to white
-    TFTscreen.stroke(255,255,255);
-    // set the font size
-    TFTscreen.setTextSize(1);
-    TFTscreen.text("Score",5,10);
-
-}
-
-int calculateScore(int val,int count) {
-    val += 5*count;
-    return val;
-}
-
-bool checkBoundary(int x,int y) {
-    if( x >= 5 && x <= myWidth - 7 && y >= 20 && y <= myHeight-14 ) {
-        return true;
-    }
-    return false;
-}

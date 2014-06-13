@@ -1,0 +1,4 @@
+# Keypad Library data types
+Game KEYWORD1
+test1111 KEYWORD1
+initial KEYWORD2
