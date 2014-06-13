@@ -30,7 +30,7 @@ http://arduino.cc/en/Tutorial/TFTPong
 
 
 // Game List
-#define PPGAME 3
+#define PPGAME 1
 #define SNAKE 2
 
 TFT TFTscreen = TFT(cs, dc, rst);
@@ -40,7 +40,7 @@ int myHeight = TFTscreen.height();
 Game snake_game = Game(myWidth,myHeight);
 PP PingPGame = PP(myWidth,myHeight);
 
-char* gameName[] = {"game1","game2","game3"};
+char* gameName[] = {"Ping Pong","Snake","game3"};
 
 // define ArduinoBoy(1) => menu state(2) => game(3) 
 
@@ -77,7 +77,7 @@ void loop() {
             //menu
             if(type == 0) {
                 // black background
-                TFTscreen.background(0,0,0);
+                TFTscreen.background(100,20,50);
                 menu(INITIAL);
                 type = 1;
             } else {
@@ -132,8 +132,8 @@ void menu(int stat) {
         selected +=1;
         change = true;
     }
-    if(selected > 3) {
-        selected = 3;
+    if(selected > 2) {
+        selected = 2;
     } else if(selected < 1) {
         selected = 1;
     }
@@ -155,11 +155,14 @@ void DrawingMenu(int selected){
 
     // set the fill color to black and erase the previous
     // position of the paddle if different from present
-    int x = 55;
+    int x = 50;
     int y = -30;
+    TFTscreen.stroke(255,255,255);
+    TFTscreen.setTextSize(2);
+    TFTscreen.text("Arduino Boy",15,15);
 
-    for(int i = 1 ; i <= 3 ; i++) {
-        int nowy = y + i * 40;
+    for(int i = 1 ; i <= 2 ; i++) {
+        int nowy = y + (i+1) * 40;
         // draw the paddle on screen, save the current position
         // as the previous.
         if(selected == i ) {
@@ -172,7 +175,7 @@ void DrawingMenu(int selected){
 
         TFTscreen.rect(x, nowy, 60, 30);
         TFTscreen.setTextSize(1);
-        TFTscreen.text(gameName[i-1],x+15,nowy+10);
+        TFTscreen.text(gameName[i-1],x+5,nowy+12);
 
     }
 }

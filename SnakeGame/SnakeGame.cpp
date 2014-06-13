@@ -156,6 +156,7 @@ void Game::DrawingEnd(TFT& TFTscreen) {
     // write the text to the top left corner of the screen
     TFTscreen.text("Game Over",myHeight/3,myWidth/3);
     // erase the ball's previous position
+    delay(200);
 }
 
 
@@ -210,7 +211,7 @@ void Game::snake(TFT& TFTscreen)
             prefoodx = foodx;
             prefoody = foody;
             TFTscreen.stroke(0,0,0);
-            TFTscreen.fill(0,0,0);
+            TFTscreen.fill(255,0,0);
             TFTscreen.rect(prefoodx,prefoody,5,5);
             genBall(TFTscreen);
             if(snakelen < 15)
@@ -220,8 +221,8 @@ void Game::snake(TFT& TFTscreen)
                 DrawingScore(score,TFTscreen);
             }
         }
-        TFTscreen.stroke(255,255,255);
-        TFTscreen.fill(255,255,255);
+        TFTscreen.stroke(0,255,0);
+        TFTscreen.fill(0,255,0);
         TFTscreen.rect(currentx,currenty,5,5);
 
         if(n == snakelen){
