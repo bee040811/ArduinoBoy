@@ -36,5 +36,6 @@ class PP
         bool checkEnd(int);
         boolean inPaddle(int x, int y, int rectX, int rectY, int rectWidth, int rectHeight);
         void reset();
+        void genBrick(TFT TFTscreen);
 };
 #endif

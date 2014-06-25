@@ -31,10 +31,18 @@ void PP::PPGame(int& state, TFT TFTscreen) {
     TFTscreen.rect(paddleX, paddleY, 20, 5);
     oldPaddleX = paddleX;
     oldPaddleY = paddleY;
+    genBrick(TFTscreen);
     while(1){
         change = false;
         if(digitalRead(PinLEFT)==0)
         {
+        if (millis() % ballSpeed < 2) {
+            moveBall(state,TFTscreen);
+            if(checkEnd(ballY)) {
+                state = 2;
+                break;
+            }
+        }
             if(shiftx < 950) {
                 shiftx+=1;
             } else {
@@ -42,6 +50,13 @@ void PP::PPGame(int& state, TFT TFTscreen) {
             }
             change = true;
         } else if(digitalRead(PinRIGHT)==0) {
+        if (millis() % ballSpeed < 2) {
+            moveBall(state,TFTscreen);
+            if(checkEnd(ballY)) {
+                state = 2;
+                break;
+            }
+        }
             if(shiftx > 70) {
                 shiftx-=1;
             } else {
@@ -75,6 +90,17 @@ void PP::PPGame(int& state, TFT TFTscreen) {
                 state = 2;
                 break;
             }
+        }
+    }
+}
+
+
+void PP::genBrick(TFT TFTscreen)
+{
+    for(int i = 0;i <myHeight/3;i+=9){
+        for(int j=0;j<myWidth;j+=25){
+            TFTscreen.fill(255,255,255);
+            TFTscreen.rect(j,i,20,7);
         }
     }
 }
