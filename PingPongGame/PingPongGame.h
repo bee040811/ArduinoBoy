@@ -37,5 +37,12 @@ class PP
         boolean inPaddle(int x, int y, int rectX, int rectY, int rectWidth, int rectHeight);
         void reset();
         void genBrick(TFT TFTscreen);
+        struct Brick{
+            int x;
+            int y;
+            bool show;
+        };
+        Brick bricks[10];
+
 };
 #endif

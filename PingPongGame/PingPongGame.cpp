@@ -19,7 +19,7 @@ void PP::PPGame(int& state, TFT TFTscreen) {
     // save the width and height of the screen
     //    TFTscreen.background(0,0,0);
     reset();
-    
+
     ballX = 5;
     ballY = 15;
 
@@ -36,13 +36,13 @@ void PP::PPGame(int& state, TFT TFTscreen) {
         change = false;
         if(digitalRead(PinLEFT)==0)
         {
-        if (millis() % ballSpeed < 2) {
-            moveBall(state,TFTscreen);
-            if(checkEnd(ballY)) {
-                state = 2;
-                break;
+            if (millis() % ballSpeed < 2) {
+                moveBall(state,TFTscreen);
+                if(checkEnd(ballY)) {
+                    state = 2;
+                    break;
+                }
             }
-        }
             if(shiftx < 950) {
                 shiftx+=1;
             } else {
@@ -50,13 +50,13 @@ void PP::PPGame(int& state, TFT TFTscreen) {
             }
             change = true;
         } else if(digitalRead(PinRIGHT)==0) {
-        if (millis() % ballSpeed < 2) {
-            moveBall(state,TFTscreen);
-            if(checkEnd(ballY)) {
-                state = 2;
-                break;
+            if (millis() % ballSpeed < 2) {
+                moveBall(state,TFTscreen);
+                if(checkEnd(ballY)) {
+                    state = 2;
+                    break;
+                }
             }
-        }
             if(shiftx > 70) {
                 shiftx-=1;
             } else {
@@ -97,18 +97,37 @@ void PP::PPGame(int& state, TFT TFTscreen) {
 
 void PP::genBrick(TFT TFTscreen)
 {
-    for(int i = 0;i <myHeight/3;i+=9){
-        for(int j=0;j<myWidth;j+=25){
+    int index=0;
+    for(int i = 1;i<myWidth;i+=32){
+        for(int j = 1;j<15;j+=7){
             TFTscreen.fill(255,255,255);
-            TFTscreen.rect(j,i,20,7);
+            TFTscreen.rect(i,j,30,5);
+            bricks[index].x = i;
+            bricks[index].y = j;
+            bricks[index].show = true;
+            index+=1;
         }
     }
+
 }
 
 // this function determines the ball's position on screen
 void PP::moveBall(int& state,TFT TFTscreen) {
     // if the ball goes offscreen, reverse the direction:
     bool in=false;
+    for(int i = 0;i<10;i++){
+        if(ballX>bricks[i].x && ballX < (bricks[i].x + 30) && ballY > bricks[i].y && ballY < (bricks[i].y+5)){
+            bricks[i].show = false;
+        }
+        if(bricks[i].show){
+            TFTscreen.fill(255,255,255);
+            TFTscreen.rect(bricks[i].x,bricks[i].y,30,5);
+        }else{
+            TFTscreen.fill(0,0,0);
+            TFTscreen.rect(bricks[i].x,bricks[i].y,30,5);
+
+        }
+    }
     if (ballX > TFTscreen.width() || ballX < 0) {
         ballDirectionX = -ballDirectionX;
     }
