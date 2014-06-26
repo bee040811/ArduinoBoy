@@ -253,7 +253,7 @@ void Game::snake(TFT& TFTscreen,int slen)
             delay(150);
         }else if(snakelen >= 5 && snakelen < 10){
             delay(120);
-        }else if(snakelen >= 11 && snakelen <20){
+        }else if(snakelen >= 10 && snakelen <20){
             delay(100);
         }else if(snakelen >= 20 && snakelen <=30){
             delay(80);
