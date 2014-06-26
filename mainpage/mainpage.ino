@@ -57,6 +57,7 @@ int menuOrder = -1;
 int game = -1;
 int selected = 1;
 int type = 0;
+int startLen = 3;
 
 
 void drawBMP(char *img) {
@@ -102,7 +103,6 @@ void initializeBMP() {
     TFTscreen.background(255, 255, 255);
 }
 
-int startLen = 3;
 void setup() {
     Serial.begin(9600);
 
