@@ -24,14 +24,14 @@ void Game::DrawingScore(int val,TFT& TFTscreen) {
 
     TFTscreen.fill(0,0,0);
     TFTscreen.stroke(0,0,0);
-    TFTscreen.rect(35, 8, 60, 10);
+    TFTscreen.rect(35, 8, 60, 7);
     // set the font color to white
     TFTscreen.stroke(255,255,255);
     // set the font size
     TFTscreen.setTextSize(1);
     String b = String(val);
     const char *a = b.c_str();
-    TFTscreen.text(a,40,10);
+    TFTscreen.text(a,40,7);
 }
 void Game::SnakePlay(int& state,TFT& TFTscreen,int& startLen) {
     if(type == 0) {
@@ -56,16 +56,16 @@ void Game::SnakePlay(int& state,TFT& TFTscreen,int& startLen) {
 void Game::DrawingBoundary(TFT& TFTscreen) {
 
     TFTscreen.fill(0,200,255);
-    TFTscreen.rect(5, 20, 150, 2);
-    TFTscreen.rect(5, 20, 2, 98);
-    TFTscreen.rect(myWidth-7, 20, 2, 98);
-    TFTscreen.rect(5, myHeight-12, 150, 2);
+    TFTscreen.rect(4, 17, 153, 2);
+    TFTscreen.rect(2, 17, 2, 100);
+    TFTscreen.rect(myWidth-4, 18, 2, 98);
+    TFTscreen.rect(2, myHeight-12, 156, 2);
 
     // set the font color to white
     TFTscreen.stroke(255,255,255);
     // set the font size
     TFTscreen.setTextSize(1);
-    TFTscreen.text("Score",5,10);
+    TFTscreen.text("Score",5,7);
 
 }
 
@@ -75,7 +75,7 @@ int Game::calculateScore(int val,int count) {
 }
 
 bool Game::checkBoundary(int x,int y) {
-    if( x >= 7 && x <= myWidth - 10 && y >= 22 && y <= myHeight-14 ) {
+    if( x >= 5 && x <= myWidth - 7 && y >= 20 && y <= myHeight-14 ) {
         return true;
     }
     return false;
