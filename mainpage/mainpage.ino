@@ -35,6 +35,7 @@ http://arduino.cc/en/Tutorial/TFTPong
 #define PPGAME 1
 #define SNAKE 2
 
+
 TFT TFTscreen = TFT(cs, dc, rst);
 int myWidth = TFTscreen.width();
 int myHeight = TFTscreen.height();
@@ -56,6 +57,7 @@ int menuOrder = -1;
 int game = -1;
 int selected = 1;
 int type = 0;
+<<<<<<< Updated upstream
 
 void drawBMP(char *img) {
     // now that the SD card can be access, try to load the
@@ -100,6 +102,7 @@ void initializeBMP() {
     TFTscreen.background(255, 255, 255);
 }
 
+int startLen = 3;
 void setup() {
     Serial.begin(9600);
 
@@ -141,7 +144,7 @@ void loop() {
             if(game == PPGAME) {
                 PingPGame.PPGame(state, TFTscreen);
             } else if(game == SNAKE) {
-                snake_game.SnakePlay(state, TFTscreen);
+                snake_game.SnakePlay(state, TFTscreen, startLen);
             }
             break;
         default:

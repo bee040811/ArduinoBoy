@@ -33,7 +33,7 @@ void Game::DrawingScore(int val,TFT& TFTscreen) {
     const char *a = b.c_str();
     TFTscreen.text(a,40,10);
 }
-void Game::SnakePlay(int& state,TFT& TFTscreen) {
+void Game::SnakePlay(int& state,TFT& TFTscreen,int& startLen) {
     if(type == 0) {
         TFTscreen.background(58,135,173);
         DrawingSnakeInitial(TFTscreen);
@@ -44,7 +44,7 @@ void Game::SnakePlay(int& state,TFT& TFTscreen) {
                 SnakeMenu(state,TFTscreen);        
                 break;
             case START:
-                snake(TFTscreen);
+                snake(TFTscreen,startLen);
                 break;
             default:
                 break;
@@ -161,7 +161,7 @@ void Game::DrawingEnd(TFT& TFTscreen) {
 }
 
 
-void Game::snake(TFT& TFTscreen)
+void Game::snake(TFT& TFTscreen,int slen)
 {
     int score = 0;
     int eatTimes = 0;
@@ -170,7 +170,7 @@ void Game::snake(TFT& TFTscreen)
     int Move = 0;
     int direx=5;
     int direy=0;
-    int snakelen = 3;
+    int snakelen = slen;
     int lastx = 0;
     int lasty = 0;
 

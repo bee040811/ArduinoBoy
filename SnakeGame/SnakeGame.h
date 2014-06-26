@@ -9,7 +9,7 @@
 #endif
 
 
-#define MAXLEN 15
+#define MAXLEN 25
 // PIN mode
 #define PinUP 4
 #define PinDOWN 5
@@ -59,12 +59,12 @@ class Game
         
         void DrawingScore(int val,TFT&);
         void DrawingBoundary(TFT&);
-        void SnakePlay(int&,TFT&);
+        void SnakePlay(int&,TFT&,int&);
         void SnakeMenu(int&,TFT&);
         void DrawingSnakeMenu(int selected,TFT&);
         void DrawingSnakeInitial(TFT&);
         void DrawingEnd(TFT&);
-        void snake(TFT&);
+        void snake(TFT&, int slen);
         void genBall(TFT&);
 
 };
