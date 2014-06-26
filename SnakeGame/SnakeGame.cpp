@@ -13,6 +13,7 @@ Game::Game(int w,int h){
     myHeight = h;
     gameState = INITIAL;
     type = 0;
+    eatself = false;
     Serial.begin(9600);
 }
 void Game::test1111(void){
@@ -167,12 +168,12 @@ void Game::snake(TFT& TFTscreen)
     int currentx = 25;
     int currenty = 25;
     int Move = 0;
-    int direx=0;
+    int direx=5;
     int direy=0;
     int snakelen = 3;
     int lastx = 0;
     int lasty = 0;
-    
+
     TFTscreen.background(0,0,0);
     genBall(TFTscreen);
     DrawingBoundary(TFTscreen);
@@ -195,6 +196,18 @@ void Game::snake(TFT& TFTscreen)
         }   
         currentx += direx;
         currenty += direy;
+        for(int i=0;i<n;i++){
+            if(currentx == posx[i] && currenty == posy[i]){    
+                eatself = true;
+            }
+        }
+        if(eatself){
+            DrawingEnd(TFTscreen);
+            delay(2000);
+            gameState = INITIAL;
+            reset();
+            break;
+        }
         if ( !checkBoundary(currentx, currenty)) {
             DrawingEnd(TFTscreen);
             delay(2000);

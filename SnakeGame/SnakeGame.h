@@ -54,6 +54,7 @@ class Game
         bool checkBoundary(int x,int y);
         void changeDirection(int &direx, int &direy,int &Move);
         bool checkball(int ballx,int bally);
+        bool eatself;
         void reset();
         
         void DrawingScore(int val,TFT&);
