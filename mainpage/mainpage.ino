@@ -57,7 +57,7 @@ int menuOrder = -1;
 int game = -1;
 int selected = 1;
 int type = 0;
-<<<<<<< Updated upstream
+
 
 void drawBMP(char *img) {
     // now that the SD card can be access, try to load the

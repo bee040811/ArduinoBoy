@@ -105,7 +105,7 @@ void Game::SnakeMenu(int& state,TFT& TFTscreen) {
             TFTscreen.background(0,0,0);
         } else if(selected == 2) {
             reset();
-            state -= 1;
+            state += 1;
             gameState = INITIAL;
         }
     }
@@ -249,7 +249,15 @@ void Game::snake(TFT& TFTscreen,int slen)
             TFTscreen.fill(0,0,0);
             TFTscreen.rect(lastx,lasty,5,5);
         }
-        delay(100);
+        if(snakelen < 5){
+            delay(150);
+        }else if(snakelen >= 5 && snakelen < 10){
+            delay(120);
+        }else if(snakelen >= 11 && snakelen <20){
+            delay(100);
+        }else if(snakelen >= 20 && snakelen <=30){
+            delay(80);
+        }
     }
 }
 
