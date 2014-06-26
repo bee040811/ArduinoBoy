@@ -17,8 +17,10 @@ http://arduino.cc/en/Tutorial/TFTPong
 
  */
 
-#include <TFT.h>
+
 #include <SPI.h>
+#include <SD.h>
+#include <TFT.h>
 #include <SnakeGame.h>
 #include <PingPongGame.h>
 
@@ -27,7 +29,7 @@ http://arduino.cc/en/Tutorial/TFTPong
 #define cs   10
 #define dc   9
 #define rst  8  
-
+#define sd_cs  2
 
 // Game List
 #define PPGAME 1
@@ -36,6 +38,9 @@ http://arduino.cc/en/Tutorial/TFTPong
 TFT TFTscreen = TFT(cs, dc, rst);
 int myWidth = TFTscreen.width();
 int myHeight = TFTscreen.height();
+// this variable represents the image to be drawn on screen
+PImage logo;
+
 
 Game snake_game = Game(myWidth,myHeight);
 PP PingPGame = PP(myWidth,myHeight);
@@ -52,9 +57,57 @@ int game = -1;
 int selected = 1;
 int type = 0;
 
+void drawBMP(char *img) {
+    // now that the SD card can be access, try to load the
+    // image file.
+    logo = TFTscreen.loadImage(img);
+    if (!logo.isValid()) {
+        Serial.println("error while loading arduino.bmp");
+    }
+    // don't do anything if the image wasn't loaded correctly.
+    if (logo.isValid() == false) {
+        return;
+    }
+
+    Serial.println("drawing image");
+
+    // get a random location where to draw the image.
+    // To avoid the image to be draw outside the screen,
+    // take into account the image size.
+    int x = 10;
+    int y = 0;
+
+    // draw the image to the screen
+    TFTscreen.image(logo, x, y);
+
+    // wait a little bit before drawing again
+    delay(1500);
+
+}
+
+void initializeBMP() {
+    // try to access the SD card. If that fails (e.g.
+    // no card present), the setup process will stop.
+    Serial.print("Initializing SD card...");
+    if (!SD.begin(sd_cs)) {
+        Serial.println("failed!");
+        return;
+    }
+    Serial.println("OK!");
+
+    // initialize and clear the GLCD screen
+    TFTscreen.begin();
+    TFTscreen.background(255, 255, 255);
+}
+
 void setup() {
-    // Serial screen
     Serial.begin(9600);
+
+    initializeBMP();
+    drawBMP("snake.bmp");
+
+    //TFTscreen.setRotation(90);
+    // Serial screen
     // initialize the display
     TFTscreen.begin();
     // black background
